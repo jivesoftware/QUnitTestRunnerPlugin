@@ -1,0 +1,103 @@
+From 7442670009609fd9e527b37dbb670d80af61d774 Mon Sep 17 00:00:00 2001
+From: Jesse Hallett <jesse.hallett@jivesoftware.com>
+Date: Sat, 11 Sep 2010 13:09:36 -0700
+Subject: [PATCH] Modifications to QUnit
+
+---
+ qunit/qunit.js |   37 +++++++++----------------------------
+ 1 files changed, 9 insertions(+), 28 deletions(-)
+
+diff --git a/qunit/qunit.js b/qunit/qunit.js
+index 9ef5f8d..7c0ce1e 100644
+--- a/qunit/qunit.js
++++ b/qunit/qunit.js
+@@ -155,6 +155,7 @@ var QUnit = {
+ 			}
+ 
+ 			var good = 0, bad = 0,
++				failures = [],
+ 				tests = id("qunit-tests");
+ 
+ 			config.stats.all += config.assertions.length;
+@@ -178,6 +179,7 @@ var QUnit = {
+ 						bad++;
+ 						config.stats.bad++;
+ 						config.moduleStats.bad++;
++						failures.push( assertion.message || "(no message)" );
+ 					}
+ 				}
+ 
+@@ -228,11 +230,12 @@ var QUnit = {
+ 						bad++;
+ 						config.stats.bad++;
+ 						config.moduleStats.bad++;
++						failures.push( config.assertions[i].message || "(no message)" );
+ 					}
+ 				}
+ 			}
+ 
+-			QUnit.testDone( testName, bad, config.assertions.length );
++			QUnit.testDone( testName, bad, config.assertions.length, failures );
+ 
+ 			if ( !window.setTimeout && !config.queue.length ) {
+ 				done();
+@@ -430,7 +433,7 @@ if ( typeof document === "undefined" || document.readyState === "complete" ) {
+ 	config.autorun = true;
+ }
+ 
+-addEvent(window, "load", function() {
++QUnit.run = function() {
+ 	// Initialize the config, saving the execution queue
+ 	var oldconfig = extend({}, config);
+ 	QUnit.init();
+@@ -496,7 +499,7 @@ addEvent(window, "load", function() {
+ 	}
+ 
+ 	QUnit.start();
+-});
++};
+ 
+ function done() {
+ 	if ( config.doneTimer && window.clearTimeout ) {
+@@ -550,31 +553,7 @@ function done() {
+ }
+ 
+ function validTest( name ) {
+-	var i = config.filters.length,
+-		run = false;
+-
+-	if ( !i ) {
+-		return true;
+-	}
+-	
+-	while ( i-- ) {
+-		var filter = config.filters[i],
+-			not = filter.charAt(0) == '!';
+-
+-		if ( not ) {
+-			filter = filter.slice(1);
+-		}
+-
+-		if ( name.indexOf(filter) !== -1 ) {
+-			return !not;
+-		}
+-
+-		if ( not ) {
+-			run = true;
+-		}
+-	}
+-
+-	return run;
++	return true;
+ }
+ 
+ function push(result, actual, expected, message) {
+@@ -1067,3 +1046,5 @@ QUnit.jsDump = (function() {
+ })();
+ 
+ })(this);
++
++// vim:tabstop=4:shiftwidth=4:noexpandtab
+-- 
+1.7.1
+
