@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*jslint laxbreak:true */
+/*global jstestdriver QUnit */
 
 /**
  * QUnitTestRunnerPlugin is a plugin for JsTestDriver that allows QUnit tests
@@ -46,6 +46,42 @@ var QUnitTestRunnerPlugin = (function(window) {
         }
     };
 
+    /**
+     * This method determines which QUnit modules are run when you pass a
+     * `--tests` option to JsTestDriver.
+     */
+    plugin.getTestRunsConfigurationFor = function(testCaseInfos, expressions, testRunsConfiguration) {
+        var i, j, foundOne = false, testCase;
+
+        // Find QUnit test cases with names that match any of the given expressions.
+        for (i = 0; i < testCaseInfos.length; i += 1) {
+            testCase = testCaseInfos[i];
+            if (testCase.getType() == QUNIT_TYPE) {
+                for (j = 0; j < expressions.length; j += 1) {
+                    if (testCase.getTestCaseName() === expressions[j]) {
+                        testRunsConfiguration.push(testCase.getDefaultTestRunConfiguration());
+                        foundOne = true;
+                        break;  // break out of the inner loop
+                    }
+                }
+            }
+        }
+
+        return foundOne;
+
+        //// This code is not cross-browser safe but is a cleaner version of the above nested looping code.
+        //var configs = testCaseInfos.filter(function(testCase) {
+        //    return testCase.getType() == QUNIT_TYPE && expressions.some(function(e) {
+        //        return testCase.getTestCaseName() === e;
+        //    });
+        //}).map(function(testCase) {
+        //    return testCase.getDefaultTestRunConfiguration();
+        //});
+        //
+        //testRunsConfiguration.push(configs);
+        //
+        //return configs.length > 0;
+    };
 
     /* Capture QUnit API calls to hook them into the JSTestDriver API. */
 
