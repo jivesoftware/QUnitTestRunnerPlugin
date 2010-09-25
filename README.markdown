@@ -21,6 +21,12 @@ stable as possible.
 Usage
 --------
 
+QUnitTestRunnerPlugin relies on the latest JsTestDriver plugin support in
+trunk.  Unfortunately using the latest stable release of JsTestDriver will not
+work.  There is a JsTestDriver jar included in this project that was compiled
+from revision 714 of the JsTestDriver trunk that you can use to run QUnit
+tests.  Or you can compile JsTestDriver yourself.
+
 Include the files qunit.js and QUnitTestRunnerPlugin.js in the load directive
 in your JsTestDriver configuration file.  Make sure that both of those files
 are loaded before any of your QUnit test files.  Otherwise configure and run
